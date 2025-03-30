@@ -169,6 +169,50 @@ subjects:
   name: jenkins 
 ```
 
+### ClusterRole
+
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: jenkins-cluster-role
+rules:
+  # Permissions for persistentvolumes
+  - apiGroups: [""]
+    resources:
+      - persistentvolumes
+    verbs: ["get", "list", "watch", "create", "update", "delete"]
+
+  # Permissions for storageclasses
+  - apiGroups: ["storage.k8s.io"]
+    resources:
+      - storageclasses
+    verbs: ["get", "list", "watch", "create", "update", "delete"]
+
+  # Permissions for ClusterIssuer
+  - apiGroups: ["cert-manager.io"]
+    resources:
+      - clusterissuers
+    verbs: ["get", "list", "watch", "create", "update", "delete"]
+```
+
+### ClusterRoleBinding
+
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: jenkins-cluster-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: jenkins-cluster-role
+subjects:
+  - kind: ServiceAccount
+    name: jenkins
+    namespace: webapps
+```
+
 ### Generate token using service account in the namespace
 
 [Create Token](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/#:~:text=To%20create%20a%20non%2Dexpiring,with%20that%20generated%20token%20data.)
